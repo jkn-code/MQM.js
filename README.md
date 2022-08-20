@@ -21,3 +21,4 @@
 
 [Пример](https://github.com/jkn-code/mgm-quest/blob/main/example.html)
 
+![](https://github.com/jkn-code/mgm-quest/blob/main/example.gif)

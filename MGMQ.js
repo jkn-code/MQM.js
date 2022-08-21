@@ -4,6 +4,7 @@ class MGMQ {
         this.params = params
         this.pages = {}
         this.var = {}
+        this.keys = []
         this.step = 0
         this._load()
     }
@@ -126,6 +127,8 @@ class MGMQ {
     }
 
     _init() {
+        this._parseText()
+
         this._page = {}
         if (!this.params.start) this._page = this._firstV(this.pages)
         else this._page = this.pages[this.params.start]
@@ -197,7 +200,14 @@ class MGMQ {
         this.goto = e.target.getAttribute('goto')
         const idx = e.target.getAttribute('idx')
         if (this.goto) {
-            if (this._page.btns[idx].func) this._page.btns[idx].func()
+            const btn = this._page.btns[idx]
+            if (btn.click) btn.click()
+            if (btn.setKey) {
+                let str2 = btn.setKey
+                if (str2[0] != '!' && this.keys.indexOf(str2) == -1) this.keys.push(str2)
+                if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) this.keys = this.keys.filter(e => e !== str2.substr(1))
+            }
+            if (btn.setKeyLine) btn.setKeyLine()
             this._page = this.pages[this.goto]
             if (this._page) this._shift('out')
             else console.log('PAIGE NO')
@@ -216,7 +226,7 @@ class MGMQ {
 
         if (!this._page) return
 
-        if (this._page.img && this._page.img != '') 
+        if (this._page.img && this._page.img != '')
             this._img.appendChild(this._page.img)
 
         if (this._page.text && this._page.text != '') {
@@ -233,15 +243,21 @@ class MGMQ {
         }
 
         if (this._page.btns) {
-            this._page.btns.forEach((bp, idx) => {
-                bp.hidden = false
-                if (bp.hide) bp.hide(bp)
-                if (bp.hidden) return
+            this._page.btns.forEach((btn, idx) => {
+                btn.hidden = false
+                if (btn.init) btn.init(btn)
+                if (btn.ifKey) {
+                    let str2 = btn.ifKey
+                    if (str2[0] != '!' && this.keys.indexOf(str2) == -1) btn.hidden = true
+                    if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) btn.hidden = true
+                }
+                if (btn.ifKeyLine) btn.ifKeyLine(btn)
+                if (btn.hidden) return
 
                 const bd = document.createElement('div')
                 bd.classList.add('btn')
-                bd.innerHTML = bp.text
-                bd.setAttribute('goto', bp.goto)
+                bd.innerHTML = btn.text
+                bd.setAttribute('goto', btn.goto)
                 bd.setAttribute('idx', idx)
                 this._btns.appendChild(bd)
             })
@@ -292,7 +308,7 @@ class MGMQ {
 
     _getSave() {
         const save = JSON.parse(localStorage['MGMQ'] || '{}')
-        this._save = save[decodeURI(location.pathname)]
+        this._save = save[decodeURI(location.pathname)] || []
     }
 
     _newQ() {
@@ -326,4 +342,45 @@ class MGMQ {
         if (n >= 10) d = ''
         return d + '' + n
     }
+
+    _parseText() {
+        if (!this.lines) return
+        
+        const lns = this.lines.split('\n')
+        let iin = false
+        let name = ''
+        let nBtn = -1
+        lns.forEach(ln => {
+            if (name != '' && !this.pages[name]) this.pages[name] = {}
+            const str2 = ln.substr(2).trim()
+
+            if (ln.substr(0, 3) == '***') {
+                name = ln.substr(3).trim()
+                nBtn = -1
+            } else if (ln.substr(0, 2) == '==') this.pages[name].img = str2
+            else if (ln.substr(0, 2) == '--') {
+                nBtn++
+                if (!this.pages[name].btns) this.pages[name].btns = []
+                if (!this.pages[name].btns[nBtn]) this.pages[name].btns[nBtn] = {}
+                this.pages[name].btns[nBtn].text = str2
+            } else if (ln.substr(0, 2) == '..') this.pages[name].btns[nBtn].goto = str2
+            else if (ln.substr(0, 2) == '++')
+                this.pages[name].btns[nBtn].setKeyLine = () => {
+                    if (str2[0] != '!' && this.keys.indexOf(str2) == -1) this.keys.push(str2)
+                    if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) this.keys = this.keys.filter(e => e !== str2.substr(1))
+                }
+            else if (ln.substr(0, 2) == '??') {
+                const btn = this.pages[name].btns[nBtn]
+                this.pages[name].btns[nBtn].ifKeyLine = () => {
+                    if (str2[0] != '!' && this.keys.indexOf(str2) == -1) btn.hidden = true
+                    if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) btn.hidden = true
+                }
+            } else if (ln.substr(0, 2) != '//' && name != '') {
+                if (!this.pages[name].text) this.pages[name].text = ''
+                this.pages[name].text += ln
+            }
+
+        })
+    }
+
 }

@@ -3,6 +3,7 @@ class MGMQ {
     constructor(params) {
         this.params = params
         this.pages = {}
+        this.lines = ''
         this.var = {}
         this.keys = []
         this.step = 0
@@ -91,10 +92,24 @@ class MGMQ {
             padding: 10px;
             cursor: pointer;
             border-bottom: 1px solid #0002;
+            transition: 0.3s;
+        }
+        #menu div:hover {
+            color: white;
         }
         #loadQ {
             max-height: 60vh;
             overflow-y: auto;
+        }
+        #menu span {
+            display: block;
+            padding: 10px;
+        }
+        #countQ {
+            position: absolute;
+            right: -5px;
+            top: -5px;
+            font-size: 12px;
         }
         @media(max-width: 600px) {
             .plane {
@@ -112,10 +127,11 @@ class MGMQ {
             <div class="footer"></div>
             <div id="openMenu"></div>
             <div id="menu">
+                <span id="countQ">0</span>
                 <div id="newQ">New</div>
                 <div id="saveQ">Save</div>
-                <br> &nbsp; Load:
-                <div id="loadQ"></div>
+                <span>Load:</span>
+                <loads id="loadQ"></loads>
             </div>
         </div>`
 
@@ -130,19 +146,29 @@ class MGMQ {
         this._parseText()
 
         this._page = {}
-        if (!this.params.start) this._page = this._firstV(this.pages)
-        else this._page = this.pages[this.params.start]
+        this.goto = this.params.start || this._firstJ(this.pages)
+        this._page = this.pages[this.goto]
 
         if (!document.createElement('title')) document.createElement('title')
         document.title = this.params.name
 
         let noPages = []
-        for (const j in this.pages)
+        let gotos = []
+        let noGotoPage = []
+        let countP = 0
+        for (const j in this.pages) {
             if (this.pages[j].btns)
                 this.pages[j].btns.forEach(b => {
                     if (!this.pages[b.goto]) noPages.push(j + '=>' + b.goto)
+                    if (b.goto) gotos.push(b.goto)
                 })
-        if (noPages.length > 0) console.log('PAIGE NO: ' + noPages.join(', ') + '.')
+            countP++
+        }
+        for (const j in this.pages)
+            if (gotos.indexOf(j) == -1) noGotoPage.push(j)
+
+        if (noPages.length > 0) console.log('No page: ' + noPages.join(', ') + '.')
+        if (noGotoPage.length > 0) console.log('No goto: ' + noGotoPage.join(', ') + '.')
 
         this._plane = document.querySelector('.plane')
         this._pause = this.params.pause || 500
@@ -160,18 +186,10 @@ class MGMQ {
                 openMenu.style.display = 'block'
                 menu.style.display = 'none'
             }
-            if (e.target.classList.contains('load')) {
-                if (confirm('Load [' + e.target.textContent + '] ?'))
-                    this._save.forEach(save => {
-                        if (save.name == e.target.textContent) {
-                            this.var = save.var
-                            this._page = this.pages[save.goto]
-                            if (this._page) this._shift('out')
-                            else console.log('PAIGE NO')
-                        }
-                    })
-            }
+            if (e.target.classList.contains('load')) this._loadQ(e)
         }
+
+        countQ.innerHTML = countP
 
         this._getSave()
         this._loading()
@@ -307,8 +325,8 @@ class MGMQ {
     }
 
     _getSave() {
-        const save = JSON.parse(localStorage['MGMQ'] || '{}')
-        this._save = save[decodeURI(location.pathname)] || []
+        const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
+        this._save = allSave[decodeURI(location.pathname)] || []
     }
 
     _newQ() {
@@ -320,21 +338,39 @@ class MGMQ {
         let name = this._zero(date.getHours()) + ':' + this._zero(date.getMinutes()) + ' ' +
             this._zero(date.getDate()) + '.' + this._zero(date.getMonth()) + '.' + date.getFullYear()
         if (name = prompt('Name', name)) {
-            const save = JSON.parse(localStorage['MGMQ'] || '{}')
+            const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
             const path = decodeURI(location.pathname)
-            if (!save[path].length) save[path] = []
-            save[path].push({
+            if (!allSave[path]) allSave[path] = []
+            allSave[path].push({
                 name: name,
                 goto: this.goto,
                 var: this.var,
+                keys: this.keys,
             })
-            localStorage['MGMQ'] = JSON.stringify(save)
+            localStorage['MGMQ'] = JSON.stringify(allSave)
             this._getSave()
         }
     }
 
+    _loadQ(e) {
+        if (confirm('Load [' + e.target.textContent + '] ?'))
+            this._save.forEach(save => {
+                if (save.name == e.target.textContent) {
+                    this.var = save.var
+                    this.keys = save.keys
+                    this._page = this.pages[save.goto]
+                    if (this._page) this._shift('out')
+                    else console.log('PAIGE NO')
+                }
+            })
+    }
+
+    _firstJ(m) {
+        for (let j in m) return j
+    }
+
     _firstV(m) {
-        for (let v in m) return m[v]
+        for (let j in m) return m[j]
     }
 
     _zero(n) {
@@ -344,43 +380,62 @@ class MGMQ {
     }
 
     _parseText() {
-        if (!this.lines) return
-        
+        if (!this.lines || this.lines == '') return
+
         const lns = this.lines.split('\n')
         let iin = false
         let name = ''
         let nBtn = -1
+        const newPages = {}
         lns.forEach(ln => {
-            if (name != '' && !this.pages[name]) this.pages[name] = {}
+            if (name != '' && !newPages[name]) newPages[name] = {}
             const str2 = ln.substr(2).trim()
 
             if (ln.substr(0, 3) == '***') {
                 name = ln.substr(3).trim()
                 nBtn = -1
-            } else if (ln.substr(0, 2) == '==') this.pages[name].img = str2
+            } else if (ln.substr(0, 2) == '==') newPages[name].img = str2
             else if (ln.substr(0, 2) == '--') {
                 nBtn++
-                if (!this.pages[name].btns) this.pages[name].btns = []
-                if (!this.pages[name].btns[nBtn]) this.pages[name].btns[nBtn] = {}
-                this.pages[name].btns[nBtn].text = str2
-            } else if (ln.substr(0, 2) == '..') this.pages[name].btns[nBtn].goto = str2
+                if (!newPages[name].btns) newPages[name].btns = []
+                if (!newPages[name].btns[nBtn]) newPages[name].btns[nBtn] = {}
+                newPages[name].btns[nBtn].text = str2
+            } else if (ln.substr(0, 2) == '..') newPages[name].btns[nBtn].goto = str2
             else if (ln.substr(0, 2) == '++')
-                this.pages[name].btns[nBtn].setKeyLine = () => {
+                newPages[name].btns[nBtn].setKeyLine = () => {
                     if (str2[0] != '!' && this.keys.indexOf(str2) == -1) this.keys.push(str2)
                     if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) this.keys = this.keys.filter(e => e !== str2.substr(1))
                 }
             else if (ln.substr(0, 2) == '??') {
-                const btn = this.pages[name].btns[nBtn]
-                this.pages[name].btns[nBtn].ifKeyLine = () => {
+                const btn = newPages[name].btns[nBtn]
+                newPages[name].btns[nBtn].ifKeyLine = () => {
                     if (str2[0] != '!' && this.keys.indexOf(str2) == -1) btn.hidden = true
                     if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) btn.hidden = true
                 }
             } else if (ln.substr(0, 2) != '//' && name != '') {
-                if (!this.pages[name].text) this.pages[name].text = ''
-                this.pages[name].text += ln
+                if (!newPages[name].text) newPages[name].text = ''
+                newPages[name].text += ln
             }
 
         })
+        
+        for (const j in newPages) {
+            if (this.pages[j] && this.pages[j].text) newPages[j].text = this.pages[j].text
+            if (this.pages[j] && this.pages[j].img) newPages[j].img = this.pages[j].img
+            if (this.pages[j] && this.pages[j].btns) {
+                this.pages[j].btns.forEach((btn, i) => {
+                    if (btn.text) newPages[j].btns[i].text = btn.text
+                    if (btn.goto) newPages[j].btns[i].goto = btn.goto
+                    if (btn.setKey) newPages[j].btns[i].setKey = btn.setKey
+                    if (btn.ifKey) newPages[j].btns[i].ifKey = btn.ifKey
+                    if (btn.click) newPages[j].btns[i].click = btn.click
+                })
+            }
+        }
+        for(const j in this.pages) 
+            if (!newPages[j]) newPages[j] = this.pages[j]
+            
+        this.pages = newPages
     }
 
 }

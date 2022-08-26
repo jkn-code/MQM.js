@@ -3,7 +3,7 @@ class MGMQ {
     constructor(params) {
         this.params = params
         this.pages = {}
-        this.lines = ''
+        this.text = ''
         this.var = {}
         this.keys = []
         this.step = 0
@@ -53,7 +53,7 @@ class MGMQ {
             position: relative;
             padding: 20px;
             margin: 10px;
-            border: 1px solid `+ (this.params.borderColor || '#0005') + `;
+            border: 1px solid `+ (this.params.borderColor || this.params.textColor || '#0005') + `;
             border-radius: 10px;
             cursor: pointer;
             transition: 0.3s;
@@ -135,9 +135,22 @@ class MGMQ {
             </div>
         </div>`
 
-        if (this.params.bgPage) document.body.style.backgroundColor = this.params.bgPage
-        if (this.params.fontColor) document.body.style.color = this.params.fontColor
+        if (this.params.bodyColor) document.body.style.backgroundColor = this.params.bodyColor
+        if (this.params.textColor) {
+            document.body.style.color = this.params.textColor
+            document.querySelector('.plane').style.borderColor = this.params.textColor
+            const rgb = document.body.style.color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+            style.appendChild(document.createTextNode('.btn:hover { background-color: rgba('+ rgb[0] +','+ rgb[1] +','+ rgb[2] +', 0.1); }'))
+            document.head.appendChild(style)    
+        }
         if (this.params.borderColor) document.querySelector('.plane').style.borderColor = this.params.borderColor
+
+        if (this.params.icon) {
+            let link = document.createElement('link')
+            link.rel = 'icon'
+            link.href = this.params.icon
+            document.head.appendChild(link)
+        }
 
         window.onload = () => this._init()
     }
@@ -380,9 +393,9 @@ class MGMQ {
     }
 
     _parseText() {
-        if (!this.lines || this.lines == '') return
+        if (!this.text || this.text == '') return
 
-        const lns = this.lines.split('\n')
+        const lns = this.text.split('\n')
         let iin = false
         let name = ''
         let nBtn = -1
@@ -414,11 +427,11 @@ class MGMQ {
                 }
             } else if (ln.substr(0, 2) != '//' && name != '') {
                 if (!newPages[name].text) newPages[name].text = ''
-                newPages[name].text += ln
+                if (ln.trim() != '') newPages[name].text += ln + '\n'
             }
 
         })
-        
+
         for (const j in newPages) {
             if (this.pages[j] && this.pages[j].text) newPages[j].text = this.pages[j].text
             if (this.pages[j] && this.pages[j].img) newPages[j].img = this.pages[j].img
@@ -432,9 +445,9 @@ class MGMQ {
                 })
             }
         }
-        for(const j in this.pages) 
+        for (const j in this.pages)
             if (!newPages[j]) newPages[j] = this.pages[j]
-            
+
         this.pages = newPages
     }
 

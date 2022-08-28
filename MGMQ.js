@@ -6,7 +6,6 @@ class MGMQ {
         this.text = ''
         this.var = {}
         this.keys = []
-        this.step = 0
         this._load()
     }
 
@@ -184,7 +183,6 @@ class MGMQ {
         if (noGotoPage.length > 0) console.log('No goto: ' + noGotoPage.join(', ') + '.')
 
         this._plane = document.querySelector('.plane')
-        this._pause = this.params.pause || 500
         this._text = document.querySelector('.text')
         this._img = document.querySelector('.img')
         this._btns = document.querySelector('.btns')
@@ -250,7 +248,6 @@ class MGMQ {
         this._text.innerHTML = ''
         this._img.innerHTML = ''
         this._btns.innerHTML = ''
-        this.step++
         this._noClick = false
 
         this._hideBtn = []

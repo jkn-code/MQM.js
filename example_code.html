@@ -13,7 +13,6 @@
             name: 'Exaple - Code',
             bodyColor: '#643',
             textColor: '#fca',
-            // borderColor: 'grey',
         })
 
         MQ.var.candies = 0
@@ -28,7 +27,7 @@
                     init: btn => {
                         if (MQ.var.candies == 3) btn.hidden = true
                     },
-                    click: btn => {
+                    click: () => {
                         MQ.var.candies++
                     }
                 },
@@ -51,7 +50,8 @@
                     goto: 'Взять',
                     init: btn => {
                         if (MQ.var.candies < 3) btn.hidden = true
-                    },click: btn => {
+                    },
+                    click: () => {
                         MQ.var.candies = 0
                     },
                 },

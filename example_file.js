@@ -23,7 +23,7 @@ MQ.pages['Старт'] = {
     img: 'Img/p1.gif',
     btns: [
         {
-            click: btn => {
+            click: () => {
                 MQ.var.points = Math.round(Math.random() * 100)
                 MQ.var.all += MQ.var.points
             }

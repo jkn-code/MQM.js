@@ -95,7 +95,7 @@ class MGMQ {
             transition: 0.3s;
         }
         #menu div:hover {
-            color: white;
+            color: #0a0;
         }
         #loadQ {
             max-height: 60vh;
@@ -232,7 +232,7 @@ class MGMQ {
         const idx = e.target.getAttribute('idx')
         if (this.goto) {
             const btn = this._page.btns[idx]
-            if (btn.click) btn.click()
+            if (btn.click) btn.click(btn)
             if (btn.setKey) {
                 let str2 = btn.setKey
                 if (str2[0] != '!' && this.keys.indexOf(str2) == -1) this.keys.push(str2)

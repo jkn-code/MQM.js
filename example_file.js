@@ -19,7 +19,7 @@ MQ.text = `
 MQ.var.points = 0
 MQ.var.all = 10
 
-MQ.pages['Старт'] = {
+MQ.page['Старт'] = {
     img: 'Img/p1.gif',
     btns: [
         {

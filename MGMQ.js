@@ -2,7 +2,7 @@
 class MGMQ {
     constructor(params) {
         this.params = params
-        this.pages = {}
+        this.page = {}
         this.text = ''
         this.var = {}
         this.keys = []
@@ -158,8 +158,8 @@ class MGMQ {
         this._parseText()
 
         this._page = {}
-        this.goto = this.params.start || this._firstJ(this.pages)
-        this._page = this.pages[this.goto]
+        this.goto = this.params.start || this._firstJ(this.page)
+        this._page = this.page[this.goto]
 
         if (!document.createElement('title')) document.createElement('title')
         document.title = this.params.name
@@ -168,15 +168,15 @@ class MGMQ {
         let gotos = []
         let noGotoPage = []
         let countP = 0
-        for (const j in this.pages) {
-            if (this.pages[j].btns)
-                this.pages[j].btns.forEach(b => {
-                    if (!this.pages[b.goto]) noPages.push(j + '=>' + b.goto)
+        for (const j in this.page) {
+            if (this.page[j].btns)
+                this.page[j].btns.forEach(b => {
+                    if (!this.page[b.goto]) noPages.push(j + '=>' + b.goto)
                     if (b.goto) gotos.push(b.goto)
                 })
             countP++
         }
-        for (const j in this.pages)
+        for (const j in this.page)
             if (gotos.indexOf(j) == -1) noGotoPage.push(j)
 
         if (noPages.length > 0) console.log('No page: ' + noPages.join(', ') + '.')
@@ -208,11 +208,11 @@ class MGMQ {
 
     _loading() {
         let imgs = 0, load = 0
-        for (const j in this.pages) if (this.pages[j].img) {
-            const src = this.pages[j].img
-            this.pages[j].img = new Image()
-            this.pages[j].img.src = src
-            this.pages[j].img.onload = () => load++
+        for (const j in this.page) if (this.page[j].img) {
+            const src = this.page[j].img
+            this.page[j].img = new Image()
+            this.page[j].img.src = src
+            this.page[j].img.onload = () => load++
             imgs++
         }
         const iv = setInterval(() => {
@@ -237,7 +237,7 @@ class MGMQ {
                 if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) this.keys = this.keys.filter(e => e !== str2.substr(1))
             }
             if (btn.setKeyLine) btn.setKeyLine()
-            this._page = this.pages[this.goto]
+            this._page = this.page[this.goto]
             if (this._page) this._shift('out')
             else console.log('PAIGE NO')
         }
@@ -368,7 +368,7 @@ class MGMQ {
                 if (save.name == e.target.textContent) {
                     this.var = save.var
                     this.keys = save.keys
-                    this._page = this.pages[save.goto]
+                    this._page = this.page[save.goto]
                     if (this._page) this._shift('out')
                     else console.log('PAIGE NO')
                 }
@@ -430,10 +430,10 @@ class MGMQ {
         })
 
         for (const j in newPages) {
-            if (this.pages[j] && this.pages[j].text) newPages[j].text = this.pages[j].text
-            if (this.pages[j] && this.pages[j].img) newPages[j].img = this.pages[j].img
-            if (this.pages[j] && this.pages[j].btns) {
-                this.pages[j].btns.forEach((btn, i) => {
+            if (this.page[j] && this.page[j].text) newPages[j].text = this.page[j].text
+            if (this.page[j] && this.page[j].img) newPages[j].img = this.page[j].img
+            if (this.page[j] && this.page[j].btns) {
+                this.page[j].btns.forEach((btn, i) => {
                     if (btn.text) newPages[j].btns[i].text = btn.text
                     if (btn.goto) newPages[j].btns[i].goto = btn.goto
                     if (btn.setKey) newPages[j].btns[i].setKey = btn.setKey
@@ -442,10 +442,10 @@ class MGMQ {
                 })
             }
         }
-        for (const j in this.pages)
-            if (!newPages[j]) newPages[j] = this.pages[j]
+        for (const j in this.page)
+            if (!newPages[j]) newPages[j] = this.page[j]
 
-        this.pages = newPages
+        this.page = newPages
     }
 
 }

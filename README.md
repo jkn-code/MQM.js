@@ -26,13 +26,16 @@ ______
 ### Примеры
 
 Пример создания квеста с помощью кода - 
-[открыть](https://github.com/jkn-code/mgm-quest/blob/main/example_code.html)
+[код](https://github.com/jkn-code/mgm-quest/blob/main/example_code.html) / 
+[страница](https://jkn-code.github.io/mgmq-examples/example_code.html)
 
 Пример создания квеста с помощью текста - 
-[открыть](https://github.com/jkn-code/mgm-quest/blob/main/example_text.html)
+[код](https://github.com/jkn-code/mgm-quest/blob/main/example_text.html) /
+[страница](https://jkn-code.github.io/mgmq-examples/example_text.html)
 
 Пример создания квеста с помощью текста и дополнений в виде кода, а так же через подключение сценария через отдельный файл - 
-[открыть](https://github.com/jkn-code/mgm-quest/blob/main/example_file.html)
+[код](https://github.com/jkn-code/mgm-quest/blob/main/example_file.html) /
+[страница](https://jkn-code.github.io/mgmq-examples/example_file.html)
 
 ______
 

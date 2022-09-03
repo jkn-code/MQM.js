@@ -144,6 +144,9 @@ class MGMQ {
         }
         if (this.params.borderColor) document.querySelector('.plane').style.borderColor = this.params.borderColor
 
+        if (!document.createElement('title')) document.createElement('title')
+        document.title = this.params.name
+
         if (this.params.icon) {
             let link = document.createElement('link')
             link.rel = 'icon'
@@ -160,9 +163,6 @@ class MGMQ {
         this._page = {}
         this.goto = this.params.start || this._firstJ(this.page)
         this._page = this.page[this.goto]
-
-        if (!document.createElement('title')) document.createElement('title')
-        document.title = this.params.name
 
         let noPages = []
         let gotos = []
@@ -225,6 +225,7 @@ class MGMQ {
 
     _btnClick(e) {
         if (this._noClick) return
+        
         this._noClick = true
         this.goto = e.target.getAttribute('goto')
         const idx = e.target.getAttribute('idx')

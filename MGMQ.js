@@ -33,12 +33,12 @@ class MGMQ {
         }
         .img img {
             width: 100%;
+            display: block;
         }
         .text {
             position: relative;
             padding: 20px;
             line-height: 25px;
-            opacity: 0;
             text-align: justify;
         }
         .text p {
@@ -139,8 +139,8 @@ class MGMQ {
             document.body.style.color = this.params.textColor
             document.querySelector('.plane').style.borderColor = this.params.textColor
             const rgb = document.body.style.color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
-            style.appendChild(document.createTextNode('.btn:hover { background-color: rgba('+ rgb[0] +','+ rgb[1] +','+ rgb[2] +', 0.1); }'))
-            document.head.appendChild(style)    
+            style.appendChild(document.createTextNode('.btn:hover { background-color: rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ', 0.1); }'))
+            document.head.appendChild(style)
         }
         if (this.params.borderColor) document.querySelector('.plane').style.borderColor = this.params.borderColor
 
@@ -193,6 +193,8 @@ class MGMQ {
         this._btns = document.querySelector('.btns')
         this._btns.addEventListener('click', e => this._btnClick(e))
 
+        if (this.params.filter) this._img.style.filter = this.params.filter;
+
         newQ.onclick = () => this._newQ()
         saveQ.onclick = () => this._saveQ()
 
@@ -220,7 +222,9 @@ class MGMQ {
             this.page[j].img.onload = () => load++
             imgs++
         }
+        this._text.style.opacity = 1
         const iv = setInterval(() => {
+            this._text.innerHTML = 'Loading '+ load +' / '+ imgs
             if (imgs == load) {
                 clearInterval(iv)
                 this._setPage()
@@ -263,7 +267,7 @@ class MGMQ {
         if (this._page.img && this._page.img != '')
             this._img.appendChild(this._page.img)
 
-        if (this._page.text && this._page.text != '') {
+        if (this._page.text && this._page.text.trim() != '') {
             let text = this._page.text
             const mv = text.split('%')
             let t = true
@@ -273,8 +277,9 @@ class MGMQ {
             })
             text = mv.join('')
             let mt = text.split('\n')
+            this._text.style.display = 'block'
             this._text.innerHTML = '<p>' + mt.join('<br></p><p>') + '</p>'
-        }
+        } else this._text.style.display = 'none'
 
         if (this._page.btns) {
             this._page.btns.forEach((btn, idx) => {
@@ -294,8 +299,9 @@ class MGMQ {
                 bd.setAttribute('goto', btn.goto)
                 bd.setAttribute('idx', idx)
                 this._btns.appendChild(bd)
+                this._btns.style.display = 'block'
             })
-        }
+        } else this._btns.style.display = 'none'
 
         this._shift('in')
     }
@@ -411,15 +417,17 @@ class MGMQ {
             if (ln.substr(0, 3) == '***') {
                 name = ln.substr(3).trim()
                 nBtn = -1
-            } 
+            }
             else if (ln.substr(0, 2) == '==') newPages[name].img = str2
             else if (ln.substr(0, 2) == '--') {
                 nBtn++
                 if (!newPages[name].btns) newPages[name].btns = []
                 if (!newPages[name].btns[nBtn]) newPages[name].btns[nBtn] = {}
                 newPages[name].btns[nBtn].text = str2
-            } 
-            else if (ln.substr(0, 2) == '..') newPages[name].btns[nBtn].goto = str2
+            }
+            else if (ln.substr(0, 2) == '..') {
+                if (nBtn > -1) newPages[name].btns[nBtn].goto = str2
+            }
             else if (ln.substr(0, 2) == '++')
                 newPages[name].btns[nBtn].setKeyLine = () => {
                     if (str2[0] != '!' && this.keys.indexOf(str2) == -1) this.keys.push(str2)
@@ -431,7 +439,7 @@ class MGMQ {
                     if (str2[0] != '!' && this.keys.indexOf(str2) == -1) btn.hidden = true
                     if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) btn.hidden = true
                 }
-            } 
+            }
             else if (ln.substr(0, 2) != '//' && name != '') {
                 if (!newPages[name].text) newPages[name].text = ''
                 if (ln.trim() != '') newPages[name].text += ln + '\n'
@@ -442,7 +450,7 @@ class MGMQ {
         for (const j in newPages) {
             if (this.page[j] && this.page[j].text) newPages[j].text = this.page[j].text
             if (this.page[j] && this.page[j].img) newPages[j].img = this.page[j].img
-            if (this.page[j] && this.page[j].btns) 
+            if (this.page[j] && this.page[j].btns)
                 this.page[j].btns.forEach((btn, i) => {
                     if (btn.text) newPages[j].btns[i].text = btn.text
                     if (btn.goto) newPages[j].btns[i].goto = btn.goto
@@ -451,7 +459,7 @@ class MGMQ {
                     if (btn.click) newPages[j].btns[i].click = btn.click
                 })
         }
-        
+
         for (const j in this.page)
             if (!newPages[j]) newPages[j] = this.page[j]
 

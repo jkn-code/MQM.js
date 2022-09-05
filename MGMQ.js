@@ -147,6 +147,11 @@ class MGMQ {
         if (!document.createElement('title')) document.createElement('title')
         document.title = this.params.name
 
+        const meta = document.createElement('meta')
+        meta.name = 'viewport'
+        meta.content = 'width=device-width, initial-scale=1.0'
+        document.head.appendChild(meta)
+
         if (this.params.icon) {
             let link = document.createElement('link')
             link.rel = 'icon'

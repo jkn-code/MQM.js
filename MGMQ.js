@@ -224,12 +224,16 @@ class MGMQ {
         }
         this._text.style.opacity = 1
         const iv = setInterval(() => {
-            this._text.innerHTML = 'Loading '+ load +' / '+ imgs
+            // this._text.innerHTML = 'Loading '+ load +' / '+ imgs
+            this._text.innerHTML = ''
+            for (let i = 0; i < imgs - load; i++)
+                this._text.innerHTML += '. '
+                
             if (imgs == load) {
                 clearInterval(iv)
                 this._setPage()
             }
-        }, 50);
+        }, 10);
     }
 
     _btnClick(e) {

@@ -417,41 +417,39 @@ class MGMQ {
         let nBtn = -1
         const newPages = {}
         lns.forEach(ln => {
-            if (name != '' && !newPages[name]) newPages[name] = {}
-
             const str2 = ln.substr(2).trim()
 
-            if (ln.substr(0, 3) == '***') {
+            if (name != '' && !newPages[name]) newPages[name] = { text: '' }
+
+            if (ln.substr(0, 3) != '***' && name != '' && ln.substr(0, 2) != '//') {
+                if (ln.substr(0, 2) == '==') newPages[name].img = str2
+                else if (ln.substr(0, 2) == '--') {
+                    nBtn++
+                    if (!newPages[name].btns) newPages[name].btns = []
+                    if (!newPages[name].btns[nBtn]) newPages[name].btns[nBtn] = {}
+                    newPages[name].btns[nBtn].text = str2
+                }
+                else if (ln.substr(0, 2) == '..') {
+                    if (nBtn > -1) newPages[name].btns[nBtn].goto = str2
+                }
+                else if (ln.substr(0, 2) == '++')
+                    newPages[name].btns[nBtn].setKeyLine = () => {
+                        if (str2[0] != '!' && this.keys.indexOf(str2) == -1) this.keys.push(str2)
+                        if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) this.keys = this.keys.filter(e => e !== str2.substr(1))
+                    }
+                else if (ln.substr(0, 2) == '??') {
+                    const btn = newPages[name].btns[nBtn]
+                    newPages[name].btns[nBtn].ifKeyLine = () => {
+                        if (str2[0] != '!' && this.keys.indexOf(str2) == -1) btn.hidden = true
+                        if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) btn.hidden = true
+                    }
+                }
+                else if (ln.substr(0, 2) == '^^') newPages[name].text += '<center>' + str2 + '</center>\n'
+                else if (ln.trim() != '') newPages[name].text += ln + '\n'
+            } else {
                 name = ln.substr(3).trim()
                 nBtn = -1
             }
-            else if (ln.substr(0, 2) == '==') newPages[name].img = str2
-            else if (ln.substr(0, 2) == '--') {
-                nBtn++
-                if (!newPages[name].btns) newPages[name].btns = []
-                if (!newPages[name].btns[nBtn]) newPages[name].btns[nBtn] = {}
-                newPages[name].btns[nBtn].text = str2
-            }
-            else if (ln.substr(0, 2) == '..') {
-                if (nBtn > -1) newPages[name].btns[nBtn].goto = str2
-            }
-            else if (ln.substr(0, 2) == '++')
-                newPages[name].btns[nBtn].setKeyLine = () => {
-                    if (str2[0] != '!' && this.keys.indexOf(str2) == -1) this.keys.push(str2)
-                    if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) this.keys = this.keys.filter(e => e !== str2.substr(1))
-                }
-            else if (ln.substr(0, 2) == '??') {
-                const btn = newPages[name].btns[nBtn]
-                newPages[name].btns[nBtn].ifKeyLine = () => {
-                    if (str2[0] != '!' && this.keys.indexOf(str2) == -1) btn.hidden = true
-                    if (str2[0] == '!' && this.keys.indexOf(str2.substr(1)) > -1) btn.hidden = true
-                }
-            }
-            else if (ln.substr(0, 2) != '//' && name != '') {
-                if (!newPages[name].text) newPages[name].text = ''
-                if (ln.trim() != '') newPages[name].text += ln + '\n'
-            }
-
         })
 
         for (const j in newPages) {

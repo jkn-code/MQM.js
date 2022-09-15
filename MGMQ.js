@@ -27,24 +27,24 @@ class MGMQ {
             max-width: 600px;
             min-height: 100vh;
         }
-        .img {
+        #_img {
             position: relative;
             opacity: 0;
         }
-        .img img {
+        #_img img {
             width: 100%;
             display: block;
         }
-        .text {
+        #_text {
             position: relative;
             padding: 20px;
             line-height: 25px;
             text-align: justify;
         }
-        .text p {
+        #_text p {
             text-indent: 40px;
         }
-        .btns {
+        #_btns {
             margin: 50px 0 100px 0;
             opacity: 0;
         }
@@ -60,10 +60,10 @@ class MGMQ {
         .btn:hover {
             background-color: #0002;
         }
-        .footer {
+        #_footer {
             height: 1px;
         }
-        #openMenu {
+        #_openMenu {
             position: fixed;
             top: 5px;
             right: 5px;
@@ -75,7 +75,7 @@ class MGMQ {
             cursor: pointer;
             z-idex: 10;
         }
-        #menu {
+        #_menu {
             position: fixed;
             top: 5px;
             right: 5px;
@@ -86,29 +86,36 @@ class MGMQ {
             width: 200px;
             color: #000;
         }
-        #menu div {
+        #_menu div {
             text-align: center;
             padding: 10px;
             cursor: pointer;
             border-bottom: 1px solid #0002;
             transition: 0.3s;
         }
-        #menu div:hover {
+        #_menu div:hover {
             color: #0a0;
         }
-        #loadQ {
+        #_loadQ {
             max-height: 60vh;
             overflow-y: auto;
         }
-        #menu span {
+        #_menu span {
             display: block;
             padding: 10px;
         }
-        #countQ {
+        #_countQ {
             position: absolute;
             right: -5px;
             top: -5px;
             font-size: 12px;
+        }
+        #_loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 500px;
         }
         @media(max-width: 600px) {
             .plane {
@@ -120,17 +127,18 @@ class MGMQ {
         document.head.appendChild(style)
 
         document.body.innerHTML = `<div class="plane">
-            <div class="img"></div>
-            <div class="text"></div>
-            <div class="btns"></div>
-            <div class="footer"></div>
-            <div id="openMenu"></div>
-            <div id="menu">
-                <span id="countQ">0</span>
+            <div id="_img"></div>
+            <div id="_text"></div>
+            <div id="_btns"></div>
+            <div id="_footer"></div>
+            <div id="_loading"></div>
+            <div id="_openMenu"></div>
+            <div id="_menu">
+                <span id="_countQ">0</span>
                 <div id="newQ">New</div>
                 <div id="saveQ">Save</div>
                 <span>Load:</span>
-                <loads id="loadQ"></loads>
+                <loads id="_loadQ"></loads>
             </div>
         </div>`
 
@@ -187,27 +195,23 @@ class MGMQ {
         if (noPages.length > 0) console.log('No page: ' + noPages.join(', ') + '.')
         if (noGotoPage.length > 0) console.log('No goto: ' + noGotoPage.join(', ') + '.')
 
-        this._plane = document.querySelector('.plane')
-        this._text = document.querySelector('.text')
-        this._img = document.querySelector('.img')
-        this._btns = document.querySelector('.btns')
-        this._btns.addEventListener('click', e => this._btnClick(e))
+        _btns.addEventListener('click', e => this._btnClick(e))
 
-        if (this.params.filter) this._img.style.filter = this.params.filter;
+        if (this.params.filter) _img.style.filter = this.params.filter;
 
         newQ.onclick = () => this._newQ()
         saveQ.onclick = () => this._saveQ()
 
         document.body.onclick = (e) => {
-            if (e.target.id == 'openMenu') this._openMenu()
+            if (e.target.id == '_openMenu') this._openMenu()
             else {
-                openMenu.style.display = 'block'
-                menu.style.display = 'none'
+                _openMenu.style.display = 'block'
+                _menu.style.display = 'none'
             }
             if (e.target.classList.contains('load')) this._loadQ(e)
         }
 
-        countQ.innerHTML = countP
+        _countQ.innerHTML = countP
 
         this._getSave()
         this._loading()
@@ -222,13 +226,12 @@ class MGMQ {
             this.page[j].img.onload = () => load++
             imgs++
         }
-        this._text.style.opacity = 1
+
         const iv = setInterval(() => {
-            // this._text.innerHTML = 'Loading '+ load +' / '+ imgs
-            this._text.innerHTML = ''
+            _loading.innerHTML = ''
             for (let i = 0; i < imgs - load; i++)
-                this._text.innerHTML += '. '
-                
+                _loading.innerHTML += '. '
+
             if (imgs == load) {
                 clearInterval(iv)
                 this._setPage()
@@ -259,9 +262,9 @@ class MGMQ {
 
     _setPage() {
         window.scrollTo({ top: 0 })
-        this._text.innerHTML = ''
-        this._img.innerHTML = ''
-        this._btns.innerHTML = ''
+        _text.innerHTML = ''
+        _img.innerHTML = ''
+        _btns.innerHTML = ''
         this._noClick = false
 
         this._hideBtn = []
@@ -269,21 +272,21 @@ class MGMQ {
         if (!this._page) return
 
         if (this._page.img && this._page.img != '')
-            this._img.appendChild(this._page.img)
+            _img.appendChild(this._page.img)
 
         if (this._page.text && this._page.text.trim() != '') {
-            let text = this._page.text
-            const mv = text.split('%')
+            let tx = this._page.text
+            const mv = tx.split('%')
             let t = true
             mv.forEach((vt, i) => {
                 if (!t) mv[i] = this.var[vt]
                 t = !t
             })
-            text = mv.join('')
-            let mt = text.split('\n')
-            this._text.style.display = 'block'
-            this._text.innerHTML = '<p>' + mt.join('<br></p><p>') + '</p>'
-        } else this._text.style.display = 'none'
+            tx = mv.join('')
+            let mt = tx.split('\n')
+            _text.style.display = 'block'
+            _text.innerHTML = '<p>' + mt.join('<br></p><p>') + '</p>'
+        } else _text.style.display = 'none'
 
         if (this._page.btns) {
             this._page.btns.forEach((btn, idx) => {
@@ -302,10 +305,10 @@ class MGMQ {
                 bd.innerHTML = btn.text
                 bd.setAttribute('goto', btn.goto)
                 bd.setAttribute('idx', idx)
-                this._btns.appendChild(bd)
-                this._btns.style.display = 'block'
+                _btns.appendChild(bd)
+                _btns.style.display = 'block'
             })
-        } else this._btns.style.display = 'none'
+        } else _btns.style.display = 'none'
 
         this._shift('in')
     }
@@ -314,13 +317,13 @@ class MGMQ {
         let opacity
         if (to == 'in') opacity = 0
         if (to == 'out') opacity = 1
-        this._img.style.opacity = opacity
-        this._text.style.opacity = opacity
-        this._btns.style.opacity = opacity
+        _img.style.opacity = opacity
+        _text.style.opacity = opacity
+        _btns.style.opacity = opacity
         let f = setInterval(() => {
-            this._img.style.opacity = opacity
-            this._text.style.opacity = opacity
-            this._btns.style.opacity = opacity
+            _img.style.opacity = opacity
+            _text.style.opacity = opacity
+            _btns.style.opacity = opacity
             if (to == 'out') {
                 opacity -= 0.05
                 if (opacity <= 0) {
@@ -343,11 +346,11 @@ class MGMQ {
 
     _openMenu() {
         this._getSave()
-        openMenu.style.display = 'none'
-        menu.style.display = 'block'
-        loadQ.innerHTML = ''
+        _openMenu.style.display = 'none'
+        _menu.style.display = 'block'
+        _loadQ.innerHTML = ''
         for (let i = this._save.length - 1; i >= 0; i--)
-            loadQ.innerHTML += '<div class="load">' + this._save[i].name + '</div>'
+            _loadQ.innerHTML += '<div class="load">' + this._save[i].name + '</div>'
     }
 
     _getSave() {
@@ -406,7 +409,7 @@ class MGMQ {
     }
 
     _parseText() {
-        if (!this.text || this.text == '') return
+        if (this.text == '') return
 
         const lns = this.text.split('\n')
         let iin = false

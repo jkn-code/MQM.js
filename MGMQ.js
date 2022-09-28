@@ -152,7 +152,6 @@ class MGMQ {
         }
         if (this.params.borderColor) document.querySelector('.plane').style.borderColor = this.params.borderColor
 
-        if (!document.createElement('title')) document.createElement('title')
         document.title = this.params.name
 
         const meta = document.createElement('meta')
@@ -419,9 +418,10 @@ class MGMQ {
         lns.forEach(ln => {
             const str2 = ln.substr(2).trim()
 
+            if (ln.substr(0, 2) == '//') return
             if (name != '' && !newPages[name]) newPages[name] = { text: '' }
 
-            if (ln.substr(0, 3) != '***' && name != '' && ln.substr(0, 2) != '//') {
+            if (ln.substr(0, 3) != '***' && name != '') {
                 if (ln.substr(0, 2) == '==') newPages[name].img = str2
                 else if (ln.substr(0, 2) == '--') {
                     nBtn++

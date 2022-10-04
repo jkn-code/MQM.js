@@ -1,24 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
+<head>    <meta charset="UTF-8"></head>
+<script src="MGMQ.js"></script>
+<script>
+const MQ = new MGMQ()
+MQ.text = `
+>name Example - text
+>back #234
+>text yellow
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="MGMQ.js"></script>
-</head>
 
-<body>
-    <script>
-        const MQ = new MGMQ({
-            name: 'Example - text',
-            bodyColor: '#234',
-            textColor: 'yellow',
-            borderColor: '#ff05',
-        })
-
-        MQ.text = `
 *** Старт
 Перед тобой на столике лежит ключ.
 -- Взять ключ
@@ -66,8 +55,4 @@
 Ты вышел из дома на улицу.
 
 `
-
-    </script>
-</body>
-
-</html>
+</script>

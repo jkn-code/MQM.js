@@ -160,6 +160,10 @@ class MGMQ {
         meta.content = 'width=device-width, initial-scale=1.0'
         document.head.appendChild(meta)
 
+        // document.head.meta
+        const mc = document.createElement('meta')
+        mc.setAttribute("charset", "UTF-8");
+
         if (this.params.icon) {
             let link = document.createElement('link')
             link.rel = 'icon'
@@ -424,6 +428,7 @@ class MGMQ {
                 if (ln.substr(0, 5) == '>name') this.params.name = ln.substr(5).trim()
                 if (ln.substr(0, 5) == '>back') this.params.bodyColor = ln.substr(5).trim()
                 if (ln.substr(0, 5) == '>text') this.params.textColor = ln.substr(5).trim()
+                if (ln.substr(0, 7) == '>filter') this.params.filter = ln.substr(7).trim()
             }
             else if (ln.substr(0, 3) != '***' && name != '') {
                 if (ln.substr(0, 2) == '==') newPages[name].img = str2

@@ -10,20 +10,15 @@ if ($_GET['d'] == 'load') {
 if ($_GET['d'] == 'crt') {
     if (!is_file($_GET['path'])) {
         $f = fopen($_GET['path'] . '.html', 'w');
-        fwrite($f, '<head>
-    <meta charset="UTF-8">
-    <script src="MGMQ.js"></script>
-</head>    
-<body>
+        fwrite($f, '<head><meta charset="UTF-8"></head>
+<script src="MGMQ.js"></script>
 <script>
-const MQ = new MGMQ({
-    name: "'. $_GET['path'] .'",
-    bodyColor: "rgb(50, 60, 70)",
-    textColor: "rgb(200, 200, 200)",
-    filter: "brightness(80%) contrast(5) grayscale(100%)",
-})
-
+const MQ = new MGMQ()
 MQ.text = `
+>name '. $_GET['path'] .'
+>back rgb(50, 60, 70)
+>text rgb(200, 200, 200)
+>filter brightness(80%) contrast(5) grayscale(100%)
 
 
 `

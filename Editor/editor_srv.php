@@ -23,7 +23,7 @@ MQ.text = `
 
 `
 </script>
-</body>');
+');
     }
 }
 

@@ -1,7 +1,7 @@
 
 class MGMQ {
     constructor(params) {
-        this.params = params
+        this.params = params || {}
         this.pages = {}
         this.text = ''
         this.var = {}

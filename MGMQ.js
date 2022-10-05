@@ -118,6 +118,15 @@ class MGMQ {
             transform: translate(-50%, -50%);
             max-width: 500px;
         }
+        #_ends {
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            line-height: 70px;
+        }
+        #_ends span {
+            padding: 10px 15px
+        }
         @media(max-width: 600px) {
             .plane {
                 border: 0px;
@@ -131,6 +140,7 @@ class MGMQ {
             <div id="_img"></div>
             <div id="_text"></div>
             <div id="_btns"></div>
+            <div id="_ends"></div>
             <div id="_footer"></div>
             <div id="_loading"></div>
             <div id="_openMenu"></div>
@@ -160,10 +170,6 @@ class MGMQ {
         meta.content = 'width=device-width, initial-scale=1.0'
         document.head.appendChild(meta)
 
-        // document.head.meta
-        const mc = document.createElement('meta')
-        mc.setAttribute("charset", "UTF-8");
-
         if (this.params.icon) {
             let link = document.createElement('link')
             link.rel = 'icon'
@@ -178,6 +184,7 @@ class MGMQ {
         this._page = {}
         this.goto = this.params.start || this._firstJ(this.pages)
         this._page = this.pages[this.goto]
+        this._num = 0
 
         let noPages = []
         let gotos = []
@@ -198,6 +205,7 @@ class MGMQ {
         if (noGotoPage.length > 0) console.log('No goto: ' + noGotoPage.join(', ') + '.')
 
         _btns.addEventListener('click', e => this._btnClick(e))
+        _ends.addEventListener('click', e => this._endClick(e))
 
         if (this.params.filter) _img.style.filter = this.params.filter;
 
@@ -243,11 +251,11 @@ class MGMQ {
 
     _btnClick(e) {
         if (this._noClick) return
-
         this._noClick = true
-        this.goto = e.target.getAttribute('goto')
+        const goto = e.target.getAttribute('goto')
         const idx = e.target.getAttribute('idx')
-        if (this.goto) {
+        if (goto) {
+            this.goto = goto
             const btn = this._page.btns[idx]
             if (btn.click) btn.click(btn)
             if (btn.setKey) {
@@ -262,11 +270,33 @@ class MGMQ {
         }
     }
 
+    _endClick(e) {
+        if (this._noClick) return
+        const goto = e.target.getAttribute('goto')
+        if (goto) {
+            if (confirm('To ending?')) {
+                this._noClick = true
+                this.goto = goto
+                this._page = this.pages[this.goto]
+                if (this._page) this._shift('out')
+                else console.log('PAIGE NO')
+            }
+        }
+        if (e.target.innerHTML == 'X') {
+            if (confirm('Clear?')) {
+                this._save.ends = []
+                this._saveE()
+                location.href = ''
+            }
+        }
+    }
+
     _setPage() {
         window.scrollTo({ top: 0 })
         _text.innerHTML = ''
         _img.innerHTML = ''
         _btns.innerHTML = ''
+        _ends.innerHTML = ''
         this._noClick = false
 
         this._hideBtn = []
@@ -312,6 +342,23 @@ class MGMQ {
             })
         } else _btns.style.display = 'none'
 
+        if (this._page._endName) {
+            if (this._save.ends.indexOf(this._page._endName) == -1)
+                this._save.ends.push(this._page._endName)
+            this._saveE()
+        }
+
+        if (this._num == 0 && this._ends.length > 0) {
+            let s = ''
+            this._ends.forEach((e, i) => {
+                if (this._save.ends.indexOf(e) > -1)
+                    s += '<span class="btn" goto="' + e + '">' + (i + 1) + '</span> '
+                else s += '<span class="btn">_</span> '
+            })
+            _ends.innerHTML = s + '<br><span class="btn">X</span>'
+        } else _ends.style.display = 'none'
+        this._num++
+
         this._shift('in')
     }
 
@@ -351,13 +398,14 @@ class MGMQ {
         _openMenu.style.display = 'none'
         _menu.style.display = 'block'
         _loadQ.innerHTML = ''
-        for (let i = this._save.length - 1; i >= 0; i--)
-            _loadQ.innerHTML += '<div class="load">' + this._save[i].name + '</div>'
+        for (let i = this._save.saves.length - 1; i >= 0; i--)
+            _loadQ.innerHTML += '<div class="load">' + this._save.saves[i].name + '</div>'
     }
 
     _getSave() {
+        // localStorage.removeItem('MGMQ')
         const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
-        this._save = allSave[decodeURI(location.pathname)] || []
+        this._save = allSave[decodeURI(location.pathname)] || { saves: [], ends: [] }
     }
 
     _newQ() {
@@ -371,8 +419,8 @@ class MGMQ {
         if (name = prompt('Name', name)) {
             const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
             const path = decodeURI(location.pathname)
-            if (!allSave[path]) allSave[path] = []
-            allSave[path].push({
+            if (!allSave[path]) allSave[path] = { saves: [], ends: [] }
+            allSave[path].saves.push({
                 name: name,
                 goto: this.goto,
                 var: this.var,
@@ -383,9 +431,17 @@ class MGMQ {
         }
     }
 
+    _saveE() {
+        const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
+        const path = decodeURI(location.pathname)
+        if (!allSave[path]) allSave[path] = { saves: [], ends: [] }
+        allSave[path].ends = this._save.ends
+        localStorage['MGMQ'] = JSON.stringify(allSave)
+    }
+
     _loadQ(e) {
         if (confirm('Load [' + e.target.textContent + '] ?'))
-            this._save.forEach(save => {
+            this._save.saves.forEach(save => {
                 if (save.name == e.target.textContent) {
                     this.var = save.var
                     this.keys = save.keys
@@ -418,6 +474,7 @@ class MGMQ {
         let name = ''
         let nBtn = -1
         const newPages = {}
+        this._ends = []
         lns.forEach(ln => {
             const str2 = ln.substr(2).trim()
 
@@ -429,6 +486,10 @@ class MGMQ {
                 if (ln.substr(0, 5) == '>back') this.params.bodyColor = ln.substr(5).trim()
                 if (ln.substr(0, 5) == '>text') this.params.textColor = ln.substr(5).trim()
                 if (ln.substr(0, 7) == '>filter') this.params.filter = ln.substr(7).trim()
+                if (ln.substr(0, 3) == '>++') {
+                    if (this._ends.indexOf(name) == -1) this._ends.push(name)
+                    if (newPages[name]) newPages[name]._endName = name
+                }
             }
             else if (ln.substr(0, 3) != '***' && name != '') {
                 if (ln.substr(0, 2) == '==') newPages[name].img = str2

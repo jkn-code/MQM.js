@@ -38,6 +38,10 @@ ______
 [код](https://github.com/jkn-code/mgm-quest/blob/main/Examples/file.html) /
 [страница](https://jkn-code.github.io/mgmq-examples/Examples/file.html)
 
+Пример создания квеста со своим `CSS-оформлением`, а так же пример использования списка концовок квеста
+[код](https://github.com/jkn-code/mgm-quest/blob/main/Examples/style.html) / 
+[страница](jkn-code.github.io/mgmq-examples/Examples/style.html)
+
 ______
 
 ### Правила создания квеста

@@ -29,7 +29,6 @@ class MGMQ {
             min-height: 100vh;
         }
         #_img {
-            position: relative;
             opacity: 0;
         }
         #_img img {
@@ -37,7 +36,6 @@ class MGMQ {
             display: block;
         }
         #_text {
-            position: relative;
             padding: 20px;
             line-height: 25px;
             text-align: justify;
@@ -50,7 +48,6 @@ class MGMQ {
             opacity: 0;
         }
         .btn {
-            position: relative;
             padding: 20px;
             margin: 10px;
             border: 1px solid `+ (this.params.borderColor || this.params.textColor || '#0005') + `;
@@ -136,7 +133,7 @@ class MGMQ {
         style.appendChild(document.createTextNode(css))
         document.head.appendChild(style)
 
-        document.body.innerHTML = `<div class="plane">
+        document.body.innerHTML += `<div class="plane">
             <div id="_img"></div>
             <div id="_text"></div>
             <div id="_btns"></div>
@@ -370,9 +367,6 @@ class MGMQ {
         _text.style.opacity = opacity
         _btns.style.opacity = opacity
         let f = setInterval(() => {
-            _img.style.opacity = opacity
-            _text.style.opacity = opacity
-            _btns.style.opacity = opacity
             if (to == 'out') {
                 opacity -= 0.05
                 if (opacity <= 0) {
@@ -386,6 +380,9 @@ class MGMQ {
                     clearInterval(f)
                 }
             }
+            _img.style.opacity = opacity
+            _text.style.opacity = opacity
+            _btns.style.opacity = opacity
         }, 20);
     }
 

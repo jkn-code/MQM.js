@@ -28,22 +28,22 @@ class MGMQ {
             max-width: 600px;
             min-height: 100vh;
         }
-        #_img {
+        #mqImg {
             opacity: 0;
         }
-        #_img img {
+        #mqImg img {
             width: 100%;
             display: block;
         }
-        #_text {
+        #mqText {
             padding: 20px;
             line-height: 25px;
             text-align: justify;
         }
-        #_text p {
+        #mqText p {
             text-indent: 40px;
         }
-        #_btns {
+        #mqBtns {
             margin: 50px 0 100px 0;
             opacity: 0;
         }
@@ -58,10 +58,10 @@ class MGMQ {
         .btn:hover {
             background-color: #0002;
         }
-        #_footer {
+        #mqFooter {
             height: 1px;
         }
-        #_openMenu {
+        #mqOpenMenu {
             position: fixed;
             top: 5px;
             right: 5px;
@@ -73,7 +73,7 @@ class MGMQ {
             cursor: pointer;
             z-idex: 10;
         }
-        #_menu {
+        #mqMenu {
             position: fixed;
             top: 5px;
             right: 5px;
@@ -84,21 +84,21 @@ class MGMQ {
             width: 200px;
             color: #000;
         }
-        #_menu div {
+        #mqMenu div {
             text-align: center;
             padding: 10px;
             cursor: pointer;
             border-bottom: 1px solid #0002;
             transition: 0.3s;
         }
-        #_menu div:hover {
+        #mqMenu div:hover {
             color: #0a0;
         }
         #_loadQ {
             max-height: 60vh;
             overflow-y: auto;
         }
-        #_menu span {
+        #mqMenu span {
             display: block;
             padding: 10px;
         }
@@ -108,20 +108,20 @@ class MGMQ {
             top: -5px;
             font-size: 12px;
         }
-        #_loading {
+        #mqLoading {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             max-width: 500px;
         }
-        #_ends {
+        #mqEnds {
             padding: 20px;
             text-align: center;
             margin-bottom: 40px;
             line-height: 70px;
         }
-        #_ends span {
+        #mqEnds span {
             padding: 10px 15px
         }
         @media(max-width: 600px) {
@@ -134,14 +134,14 @@ class MGMQ {
         document.head.appendChild(style)
 
         document.body.innerHTML += `<div class="plane">
-            <div id="_img"></div>
-            <div id="_text"></div>
-            <div id="_btns"></div>
-            <div id="_ends"></div>
-            <div id="_footer"></div>
-            <div id="_loading"></div>
-            <div id="_openMenu"></div>
-            <div id="_menu">
+            <div id="mqImg"></div>
+            <div id="mqText"></div>
+            <div id="mqBtns"></div>
+            <div id="mqEnds"></div>
+            <div id="mqFooter"></div>
+            <div id="mqLoading"></div>
+            <div id="mqOpenMenu"></div>
+            <div id="mqMenu">
                 <span id="_countQ">0</span>
                 <div id="newQ">New</div>
                 <div id="saveQ">Save</div>
@@ -201,19 +201,19 @@ class MGMQ {
         if (noPages.length > 0) console.log('No page: ' + noPages.join(', ') + '.')
         if (noGotoPage.length > 0) console.log('No goto: ' + noGotoPage.join(', ') + '.')
 
-        _btns.addEventListener('click', e => this._btnClick(e))
-        _ends.addEventListener('click', e => this._endClick(e))
+        mqBtns.addEventListener('click', e => this._btnClick(e))
+        mqEnds.addEventListener('click', e => this._endClick(e))
 
-        if (this.params.filter) _img.style.filter = this.params.filter;
+        if (this.params.filter) mqImg.style.filter = this.params.filter;
 
         newQ.onclick = () => this._newQ()
         saveQ.onclick = () => this._saveQ()
 
         document.body.onclick = (e) => {
-            if (e.target.id == '_openMenu') this._openMenu()
+            if (e.target.id == 'mqOpenMenu') this._openMenu()
             else {
-                _openMenu.style.display = 'block'
-                _menu.style.display = 'none'
+                mqOpenMenu.style.display = 'block'
+                mqMenu.style.display = 'none'
             }
             if (e.target.classList.contains('load')) this._loadQ(e)
         }
@@ -235,9 +235,9 @@ class MGMQ {
         }
 
         const iv = setInterval(() => {
-            _loading.innerHTML = ''
+            mqLoading.innerHTML = ''
             for (let i = 0; i < imgs - load; i++)
-                _loading.innerHTML += '. '
+                mqLoading.innerHTML += '. '
 
             if (imgs == load) {
                 clearInterval(iv)
@@ -290,10 +290,10 @@ class MGMQ {
 
     _setPage() {
         window.scrollTo({ top: 0 })
-        _text.innerHTML = ''
-        _img.innerHTML = ''
-        _btns.innerHTML = ''
-        _ends.innerHTML = ''
+        mqText.innerHTML = ''
+        mqImg.innerHTML = ''
+        mqBtns.innerHTML = ''
+        mqEnds.innerHTML = ''
         this._noClick = false
 
         this._hideBtn = []
@@ -301,7 +301,7 @@ class MGMQ {
         if (!this._page) return
 
         if (this._page.img && this._page.img != '')
-            _img.appendChild(this._page.img)
+            mqImg.appendChild(this._page.img)
 
         if (this._page.text && this._page.text.trim() != '') {
             let tx = this._page.text
@@ -313,9 +313,9 @@ class MGMQ {
             })
             tx = mv.join('')
             let mt = tx.split('\n')
-            _text.style.display = 'block'
-            _text.innerHTML = '<p>' + mt.join('<br></p><p>') + '</p>'
-        } else _text.style.display = 'none'
+            mqText.style.display = 'block'
+            mqText.innerHTML = '<p>' + mt.join('<br></p><p>') + '</p>'
+        } else mqText.style.display = 'none'
 
         if (this._page.btns) {
             this._page.btns.forEach((btn, idx) => {
@@ -334,10 +334,10 @@ class MGMQ {
                 bd.innerHTML = btn.text
                 bd.setAttribute('goto', btn.goto)
                 bd.setAttribute('idx', idx)
-                _btns.appendChild(bd)
-                _btns.style.display = 'block'
+                mqBtns.appendChild(bd)
+                mqBtns.style.display = 'block'
             })
-        } else _btns.style.display = 'none'
+        } else mqBtns.style.display = 'none'
 
         if (this._page._endName) {
             if (this._save.ends.indexOf(this._page._endName) == -1)
@@ -352,8 +352,8 @@ class MGMQ {
                     s += '<span class="btn" goto="' + e + '">' + (i + 1) + '</span> '
                 else s += '<span class="btn">_</span> '
             })
-            _ends.innerHTML = s + '<br><span class="btn">X</span>'
-        } else _ends.style.display = 'none'
+            mqEnds.innerHTML = s + '<br><span class="btn">X</span>'
+        } else mqEnds.style.display = 'none'
         this._num++
 
         this._shift('in')
@@ -363,9 +363,9 @@ class MGMQ {
         let opacity
         if (to == 'in') opacity = 0
         if (to == 'out') opacity = 1
-        _img.style.opacity = opacity
-        _text.style.opacity = opacity
-        _btns.style.opacity = opacity
+        mqImg.style.opacity = opacity
+        mqText.style.opacity = opacity
+        mqBtns.style.opacity = opacity
         let f = setInterval(() => {
             if (to == 'out') {
                 opacity -= 0.05
@@ -380,9 +380,9 @@ class MGMQ {
                     clearInterval(f)
                 }
             }
-            _img.style.opacity = opacity
-            _text.style.opacity = opacity
-            _btns.style.opacity = opacity
+            mqImg.style.opacity = opacity
+            mqText.style.opacity = opacity
+            mqBtns.style.opacity = opacity
         }, 20);
     }
 
@@ -392,8 +392,8 @@ class MGMQ {
 
     _openMenu() {
         this._getSave()
-        _openMenu.style.display = 'none'
-        _menu.style.display = 'block'
+        mqOpenMenu.style.display = 'none'
+        mqMenu.style.display = 'block'
         _loadQ.innerHTML = ''
         for (let i = this._save.saves.length - 1; i >= 0; i--)
             _loadQ.innerHTML += '<div class="load">' + this._save.saves[i].name + '</div>'

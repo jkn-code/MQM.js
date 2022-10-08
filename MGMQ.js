@@ -6,6 +6,7 @@ class MGMQ {
         this.text = ''
         this.var = {}
         this.keys = []
+        this._ends = []
         setTimeout(() => this._load(), 0) // for body
     }
 
@@ -471,7 +472,6 @@ class MGMQ {
         let name = ''
         let nBtn = -1
         const newPages = {}
-        this._ends = []
         lns.forEach(ln => {
             const str2 = ln.substr(2).trim()
 

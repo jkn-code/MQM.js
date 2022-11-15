@@ -1,4 +1,4 @@
-# MGMQ.javascript
+# MGMQ.js
 
 ## Mini game maker - Quest
 

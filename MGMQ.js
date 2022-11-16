@@ -1,17 +1,13 @@
 
 class MGMQ {
     constructor(params) {
-        // this.params = params || {}
         this.cfg = {}
         this.pages = {}
         this.text = ''
         this.countCh = 0
         this.countP = 0
-        // this.var = {}
-        // this.keys = []
         this.endings = []
-        // this.save = { saves: [], ends: [] }
-        setTimeout(() => this.crtHtml(), 0) // for body
+        setTimeout(() => this.crtHtml(), 0)
     }
 
 
@@ -248,11 +244,6 @@ class MGMQ {
             if (e.target.classList.contains('load')) this.loadQ(e)
         }
 
-        // this.getEnds()
-        // const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
-        // if (allSave[decodeURI(location.pathname)])
-        //     this.save.ends = allSave[decodeURI(location.pathname)].ends
-        // console.log(this.save.ends);
 
         this.loading()
     }
@@ -282,7 +273,6 @@ class MGMQ {
 
 
     btnClick(e) {
-        // console.log(e);
         if (this.noClick) return
         this.noClick = true
         const goto = e.target.getAttribute('goto')
@@ -290,20 +280,17 @@ class MGMQ {
         if (goto) {
             this.goto = goto
             const btn = this.nowPage.btns[idx]
-            // console.log(btn);
             if (btn.fnStr) eval(btn.fnStr)
             this.nowPage = this.pages[this.goto]
             if (!this.nowPage) return console.log('PAIGE NO')
             if (!this.nowPage.forks) this.shift('out')
-            else { /* forks */
+            else {
                 let goto, fnStr
                 this.nowPage.forks.forEach(fr => {
-                    // console.log(fr);
                     if (goto) return
                     eval('if (' + fr.if + ') { goto = "' + fr.goto + '"; fnStr = `' + fr.fnStr + '`; }')
                 })
                 if (goto) {
-                    // console.log(goto);
                     if (fnStr) eval(fnStr)
                     this.goto = goto
                     this.nowPage = this.pages[this.goto]
@@ -330,8 +317,6 @@ class MGMQ {
         }
         if (e.target.innerHTML == 'X') {
             if (confirm('Clear?')) {
-                // this.save.ends = []
-                // this.saveEnd()
                 const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
                 const path = decodeURI(location.pathname)
                 if (!allSave[path]) allSave[path] = { pages: [], ends: {} }
@@ -359,13 +344,10 @@ class MGMQ {
             let tx = this.nowPage.text
             const mv = tx.split('%')
             let t = true
-            // console.log(this.vars);
             mv.forEach((vt, i) => {
-                // console.log(vt);
                 try {
                     mv[i] = eval(vt.trim())
                 } catch (a) {
-                    // console.log(a);
                 }
             })
             tx = mv.join('')
@@ -388,7 +370,6 @@ class MGMQ {
 
         if (this.nowPage.endName) {
             const ends = this.getSave('ends')
-            // console.log(ends);
             const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
             const path = decodeURI(location.pathname)
             if (!allSave[path]) allSave[path] = { pages: [], ends: {} }
@@ -397,17 +378,13 @@ class MGMQ {
             this.vars.forEach(v => vars[v] = window[v])
 
             allSave[path].ends[this.goto] = { vars: vars }
-            // console.log(allSave);
             localStorage['MGMQ'] = JSON.stringify(allSave)
         }
 
         if (this.num == 0 && this.endings.length > 0) {
             let s = ''
             const ends = this.getSave('ends')
-            // console.log(ends);
             this.endings.forEach((e, i) => {
-                // console.log(e);
-                // if (ends.indexOf(e) > -1)
                 if (ends[e])
                     s += '<span class="btn" goto="' + e + '">' + (i + 1) + '</span> '
                 else
@@ -461,8 +438,6 @@ class MGMQ {
 
 
     getSave(name) {
-        /* localStorage.removeItem('MGMQ') */
-        // localStorage.removeItem('MGMQ')
         const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
         if (allSave[decodeURI(location.pathname)])
             return allSave[decodeURI(location.pathname)][name]
@@ -470,13 +445,6 @@ class MGMQ {
     }
 
 
-    // getEnds() {
-    //     const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
-    //     // this.save = allSave[decodeURI(location.pathname)] || { saves: [], ends: [] }
-    //     // console.log(allSave[decodeURI(location.pathname)]);
-    //     if (allSave[decodeURI(location.pathname)])
-    //         this.save.ends = allSave[decodeURI(location.pathname)].ends
-    // }
 
 
     newQ() {
@@ -506,30 +474,17 @@ class MGMQ {
                 goto: this.goto,
                 vars: vars,
             })
-            // console.log(allSave);
             localStorage['MGMQ'] = JSON.stringify(allSave)
-            // this.getSave('pages')
         }
     }
 
-
-    // saveEnd(ends) {
-    //     const allSave = JSON.parse(localStorage['MGMQ'] || '{}')
-    //     const path = decodeURI(location.pathname)
-    //     if (!allSave[path]) allSave[path] = { pages: [], ends: [] }
-
-    //     allSave[path].ends = ends
-    //     localStorage['MGMQ'] = JSON.stringify(allSave)
-    // }
-
-
+    
     loadQ(e) {
         const pages = this.getSave('pages')
         const idx = e.target.getAttribute('idx')
         if (confirm('Load [' + e.target.textContent + '] ?'))
             pages.forEach((save, i) => {
                 if (i == idx) {
-                    // console.log(save);
                     this.vars.forEach(v => window[v] = save.vars[v])
                     this.goto = save.goto
                     this.nowPage = this.pages[this.goto]
@@ -561,84 +516,61 @@ class MGMQ {
         let nBtn = -1
         let nFrk = -1
         this.vars = []
-        // let _goto, _fnStr
         const newPages = {}
+        const tags = ['>name', '>icon', '>back', '>text', '>border', '>filter', '>nocss', '>var', '!!!', '***', '==', '??-', '++', '..', '??', '::', '^^', '//']
         lns.forEach(ln => {
-            const str2 = ln.substr(2).trim()
-            const key2 = ln.substr(0, 2)
+            const m = ln.split(' ')
+            const key = m.splice(0, 1)[0]
+            const str = ln.replace(key, '').trim()
 
-            if (str2 == '//') return
-            if (name != '' && !newPages[name]) newPages[name] = { text: '' }
-
-            if (ln[0] == '>') {
-                if (ln.substr(0, 5) == '>name') this.cfg.name = ln.substr(5).trim()
-                if (ln.substr(0, 5) == '>icon') this.cfg.icon = ln.substr(5).trim()
-                if (ln.substr(0, 5) == '>back') this.cfg.bodyColor = ln.substr(5).trim()
-                if (ln.substr(0, 5) == '>text') this.cfg.textColor = ln.substr(5).trim()
-                if (ln.substr(0, 7) == '>border') this.cfg.borderColor = ln.substr(7).trim()
-                if (ln.substr(0, 7) == '>filter') this.cfg.filter = ln.substr(7).trim()
-                if (ln.substr(0, 6) == '>nocss') this.cfg.noCss = true
-                if (ln.substr(0, 4) == '>var') {
-                    this.vars = ln.substr(4).trim().split(',')
-                    for (let j in this.vars) {
-                        this.vars[j] = this.vars[j].trim()
-                        window[this.vars[j]] = undefined
-                    }
-                    // console.log(this.vars);
-                }
-                if (ln.substr(0, 3) == '>++') {
-                    if (this.endings.indexOf(name) == -1) this.endings.push(name)
-                    if (newPages[name]) newPages[name].endName = name
-                }
+            if (key == '//') return
+            if (key == '>name') this.cfg.name = str
+            if (key == '>icon') this.cfg.icon = str
+            if (key == '>back') this.cfg.bodyColor = str
+            if (key == '>text') this.cfg.textColor = str
+            if (key == '>border') this.cfg.borderColor = str
+            if (key == '>filter') this.cfg.filter = str
+            if (key == '>nocss') this.cfg.noCss = true
+            if (key == '>var') str.split(',').forEach(v => window[v.trim()] = undefined)
+            if (key == '!!!') {
+                if (this.endings.indexOf(name) == -1) this.endings.push(name)
+                if (newPages[name]) newPages[name].endName = name
             }
-            else if (ln.substr(0, 3) == '***') {
-                name = ln.substr(3).trim()
+            if (key == '***') {
+                name = str
                 nBtn = -1
                 nFrk = -1
+                newPages[name] = { text: '' }
             }
-            else if (ln.substr(0, 3) == '---' && name != '') {
+            if (name == '') return
+            if (key == '==') {
                 nBtn++
                 if (!newPages[name].btns) newPages[name].btns = []
                 if (!newPages[name].btns[nBtn]) newPages[name].btns[nBtn] = {}
-                newPages[name].btns[nBtn].text = ln.substr(3).trim()
+                newPages[name].btns[nBtn].text = str
                 newPages[name].btns[nBtn].fnStr = ''
             }
-            else if (ln.substr(0, 3) == '??-' && name != '') {
+            if (key == '??-') {
                 nFrk++
                 if (!newPages[name].forks) newPages[name].forks = []
                 if (!newPages[name].forks[nFrk]) newPages[name].forks[nFrk] = {}
-                newPages[name].forks[nFrk].if = ln.substr(3).trim()
+                newPages[name].forks[nFrk].if = str
                 newPages[name].forks[nFrk].fnStr = ''
             }
-            else if (name != '') {
-                switch (key2) {
-                    case '==': {
-                        newPages[name].img = str2
-                        break
-                    }
-                    case '..': {
-                        if (nBtn > -1) newPages[name].btns[nBtn].goto = str2
-                        if (nFrk > -1) newPages[name].forks[nFrk].goto = str2
-                        break
-                    }
-                    case '??': {
-                        if (nBtn > -1) newPages[name].btns[nBtn].if = str2
-                        break
-                    }
-                    case '::': {
-                        if (nBtn > -1) newPages[name].btns[nBtn].fnStr += str2 + '\n'
-                        if (nFrk > -1) newPages[name].forks[nFrk].fnStr += str2 + '\n'
-                        break
-                    }
-                    case '^^': {
-                        newPages[name].text += '<center>' + str2 + '</center>\n'
-                        break
-                    }
-                    default: {
-                        newPages[name].text += ln + '\n'
-                        this.countCh += ln.length
-                    }
-                }
+            if (key == '++') newPages[name].img = str
+            if (key == '..') {
+                if (nBtn > -1) newPages[name].btns[nBtn].goto = str
+                if (nFrk > -1) newPages[name].forks[nFrk].goto = str
+            }
+            if (key == '??') if (nBtn > -1) newPages[name].btns[nBtn].if = str
+            if (key == '::') {
+                if (nBtn > -1) newPages[name].btns[nBtn].fnStr += str + '\n'
+                if (nFrk > -1) newPages[name].forks[nFrk].fnStr += str + '\n'
+            }
+            if (key == '^^') newPages[name].text += '<center>' + str + '</center>\n'
+            if (!tags.includes(key)) {
+                newPages[name].text += ln + '\n'
+                this.countCh += ln.length
             }
         })
 

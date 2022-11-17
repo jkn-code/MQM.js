@@ -1,5 +1,5 @@
 
-class MGMQ {
+class MQM {
     constructor(params) {
         this.cfg = {}
         this.pages = {}
@@ -23,7 +23,7 @@ class MGMQ {
             <div id="mqLoading"></div>
             <div id="mqOpenMenu">&equiv;</div>
             <div id="mqMenu">
-                <span id="mqCountQ">Pages: 0 &nbsp; Chars: 0</span>
+                <span id="mqCountQ">Pages: 0 &nbsp; Letters: 0</span>
                 <div id="newQ">New</div>
                 <div id="saveQ">Save</div>
                 <span>Load:</span>
@@ -156,7 +156,7 @@ class MGMQ {
         #mqMenu span {
             display: block;
             padding: 10px;
-            font-size: 14px;
+            font-size: 12px;
         }
         #mqCountQ {
             font-size: 12px;
@@ -227,7 +227,7 @@ class MGMQ {
         if (noPages.length > 0) console.log('No page: ' + noPages.join(', ') + '.')
         if (noGotoPage.length > 0) console.log('No goto: ' + noGotoPage.join(', ') + '.')
 
-        mqCountQ.innerHTML = 'Pages: ' + this.countP + ' &nbsp; Chars: ' + this.countCh
+        mqCountQ.innerHTML = 'Pages: ' + this.countP + ' &nbsp; Letters: ' + this.countCh
 
         mqBtns.addEventListener('click', e => this.btnClick(e))
         mqEnds.addEventListener('click', e => this.endClick(e))
@@ -443,8 +443,6 @@ class MGMQ {
             return allSave[decodeURI(location.pathname)][name]
         else return []
     }
-
-
 
 
     newQ() {

@@ -7,7 +7,7 @@ class MQM {
         this.countCh = 0
         this.countP = 0
         this.endings = []
-        setTimeout(() => this.crtHtml(), 0)
+        window.onload = () => this.crtHtml()
     }
 
 
@@ -47,7 +47,7 @@ class MQM {
 
         if (!this.cfg.noCss) this.crtCss()
 
-        window.onload = () => this.init()
+        setTimeout(() => this.init(), 50)
     }
 
 

@@ -1,0 +1,23 @@
+<head><meta charset="UTF-8"></head>
+<script src="../git/MQM.js"></script>
+<script>
+const Mqm = new MQM()
+Mqm.text += `
+>name Квест
+
+*** Страница 1
+Текст 1 текст текст текст текст текст текст.
+== На 2 стр
+.. Страница 2
+== На 10 стр
+.. Страница 10
+== На 20 стр
+.. Страница 20
+
+*** Страница 2
+Текст 2 текст текст.
+^^ Конец
+`
+</script>
+<script src="page1.js"></script>
+<script src="page2.js"></script>

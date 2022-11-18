@@ -111,7 +111,7 @@ class MQM {
             height: 30px;
             text-align: center;
             line-height: 27px;
-            font-size: 25px;
+            font-size: 35px;
             cursor: pointer;
             z-idex: 10;
             transition: 0.3s;
@@ -201,7 +201,7 @@ class MQM {
 
     init() {
         this.nowPage = {}
-        this.goto = this.firstJ(this.pages)
+        this.goto = this.goto || this.firstJ(this.pages)
         this.nowPage = this.pages[this.goto]
         this.num = 0
 
@@ -266,9 +266,29 @@ class MQM {
 
             if (imgs == load) {
                 clearInterval(iv)
-                this.printPage()
+                this.workPage()
             }
         }, 10);
+    }
+
+
+    workPage() {
+        console.log(this.nowPage);
+        if (this.nowPage.forks) {
+            let goto, fnStr
+            this.nowPage.forks.forEach(fr => {
+                if (goto) return
+                eval('if (' + fr.if + ') { goto = "' + fr.goto + '"; fnStr = `' + fr.fnStr + '`; }')
+            })
+            if (goto) {
+                if (fnStr) eval(fnStr)
+                this.goto = goto
+                this.nowPage = this.pages[this.goto]
+                this.workPage()
+            }
+        } else this.shift('in')
+
+        if (!this.nowPage) return console.log('PAIGE NO')
     }
 
 
@@ -282,21 +302,7 @@ class MQM {
             const btn = this.nowPage.btns[idx]
             if (btn.fnStr) eval(btn.fnStr)
             this.nowPage = this.pages[this.goto]
-            if (!this.nowPage) return console.log('PAIGE NO')
-            if (!this.nowPage.forks) this.shift('out')
-            else {
-                let goto, fnStr
-                this.nowPage.forks.forEach(fr => {
-                    if (goto) return
-                    eval('if (' + fr.if + ') { goto = "' + fr.goto + '"; fnStr = `' + fr.fnStr + '`; }')
-                })
-                if (goto) {
-                    if (fnStr) eval(fnStr)
-                    this.goto = goto
-                    this.nowPage = this.pages[this.goto]
-                    this.shift('out')
-                }
-            }
+            this.shift('out')
         }
     }
 
@@ -354,7 +360,7 @@ class MQM {
             let mt = tx.split('\n')
             mqText.style.display = 'block'
             mqText.innerHTML = '<p>' + mt.join('<br></p><p>') + '</p>'
-        } else mqText.style.display = 'none'
+        } 
 
         if (this.nowPage.btns) {
             this.nowPage.btns.forEach((btn, idx) => {
@@ -367,6 +373,7 @@ class MQM {
                     '" idx="' + idx + '">' + btn.text + '</div>'
             })
         } else mqBtns.style.display = 'none'
+
 
         if (this.nowPage.endName) {
             const ends = this.getSave('ends')
@@ -395,13 +402,15 @@ class MQM {
         this.num++
 
         this.noClick = false
-        this.shift('in')
     }
 
 
     shift(to) {
         let opacity
-        if (to == 'in') opacity = 0
+        if (to == 'in') {
+            opacity = 0
+            this.printPage()
+        }
         if (to == 'out') opacity = 1
         mqImg.style.opacity = opacity
         mqText.style.opacity = opacity
@@ -411,7 +420,7 @@ class MQM {
                 opacity -= 0.05
                 if (opacity <= 0) {
                     clearInterval(f)
-                    this.printPage()
+                    this.workPage()
                 }
             }
             if (to == 'in') {
@@ -507,7 +516,6 @@ class MQM {
 
     parseText() {
         if (this.text == '') return
-
         const lns = this.text.split('\n')
         let iin = false
         let name = ''
@@ -515,7 +523,7 @@ class MQM {
         let nFrk = -1
         this.vars = []
         const newPages = {}
-        const tags = ['>name', '>icon', '>back', '>text', '>border', '>filter', '>nocss', '>var', '!!!', '***', '==', '??-', '++', '..', '??', '::', '^^', '//']
+        const tags = ['>name', '>icon', '>back', '>text', '>border', '>filter', '>nocss', '>var', '>start', '!!!', '***', '==', '??-', '++', '..', '??', '::', '^^', '//']
         lns.forEach(ln => {
             const m = ln.split(' ')
             const key = m.splice(0, 1)[0]
@@ -530,6 +538,7 @@ class MQM {
             if (key == '>filter') this.cfg.filter = str
             if (key == '>nocss') this.cfg.noCss = true
             if (key == '>var') str.split(',').forEach(v => window[v.trim()] = undefined)
+            if (key == '>start') this.goto = str
             if (key == '!!!') {
                 if (this.endings.indexOf(name) == -1) this.endings.push(name)
                 if (newPages[name]) newPages[name].endName = name
@@ -567,7 +576,7 @@ class MQM {
             }
             if (key == '^^') newPages[name].text += '<center>' + str + '</center>\n'
             if (!tags.includes(key)) {
-                newPages[name].text += ln + '\n'
+                if (ln.trim() != '') newPages[name].text += ln + '\n'
                 this.countCh += ln.length
             }
         })
@@ -592,4 +601,10 @@ class MQM {
 
 function rnd(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+const log = console.log
+
+function round(n, c) {
+    return n.toFixed(c)
 }

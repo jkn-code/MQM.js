@@ -393,9 +393,9 @@ class MQM {
             const ends = this.getSave('ends')
             this.endings.forEach((e, i) => {
                 if (ends[e])
-                    s += '<span class="btn" title="Ending ' + i + '" goto="' + e + '">' + (i + 1) + '</span> '
+                    s += '<span class="btn" title="Ending ' + (i + 1) + '" goto="' + e + '">' + (i + 1) + '</span> '
                 else
-                    s += '<span class="btn" title="Ending ' + i + '">_</span> '
+                    s += '<span class="btn" title="Ending ' + (i + 1) + '">_</span> '
             })
             mqEnds.innerHTML = s + '<br><span class="btn">X</span>'
         } else mqEnds.style.display = 'none'

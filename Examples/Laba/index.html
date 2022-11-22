@@ -1,0 +1,36 @@
+<head><meta charset="UTF-8"></head>
+<script src="../../MQM.js"></script>
+<script>
+const Mqm = new MQM()
+Mqm.text += `
+>name Лаборатория
+>icon ../icon.png
+>back #778
+>border #fff
+>var страница, кран, вода_в_ведре, подогрев, температура_ведра, реагент1, организмы
+>start Начало
+
+*** Начало
+??- 1
+.. Процесс
+:: log(1)
+:: страница = ""
+:: вода_в_ведре = 0
+:: кран = 0
+:: подогрев = 0
+:: температура_ведра = 20
+:: реагент1 = 0
+:: организмы = 0
+
+
+`
+</script>
+<script src="menu.js"></script>
+<script src="work.js"></script>
+<script src="pages.js"></script>
+<style>
+    .btn {
+        padding-top: 10px!important;
+        padding-bottom: 10px!important;
+    }
+</style>

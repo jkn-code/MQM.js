@@ -159,12 +159,13 @@ ______
 
 Текст, картинки, минимум переменных
 
-[Самосбор - Слизень]()
-[Самосбор - Синяя рука]()
+[Самосбор - Слизень](http://innercat.ru/mqm/Examples/smsbr-slizen.html)
+
+[Самосбор - Синяя рука](http://innercat.ru/mqm/Examples/smsbr-sin_rook.html)
 
 Текст, много переменных, js-вставки (условия)
 
-[Самосбор - Лаборатория]()
+[Самосбор - Лаборатория](http://innercat.ru/mqm/Examples/Laba/index.html)
 
 ______
 

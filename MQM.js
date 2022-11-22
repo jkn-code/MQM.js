@@ -360,7 +360,7 @@ class MQM {
             let mt = tx.split('\n')
             mqText.style.display = 'block'
             mqText.innerHTML = '<p>' + mt.join('<br></p><p>') + '</p>'
-        } 
+        }
 
         if (this.nowPage.btns) {
             this.nowPage.btns.forEach((btn, idx) => {
@@ -393,9 +393,9 @@ class MQM {
             const ends = this.getSave('ends')
             this.endings.forEach((e, i) => {
                 if (ends[e])
-                    s += '<span class="btn" goto="' + e + '">' + (i + 1) + '</span> '
+                    s += '<span class="btn" title="Ending ' + i + '" goto="' + e + '">' + (i + 1) + '</span> '
                 else
-                    s += '<span class="btn">_</span> '
+                    s += '<span class="btn" title="Ending ' + i + '">_</span> '
             })
             mqEnds.innerHTML = s + '<br><span class="btn">X</span>'
         } else mqEnds.style.display = 'none'
@@ -485,7 +485,7 @@ class MQM {
         }
     }
 
-    
+
     loadQ(e) {
         const pages = this.getSave('pages')
         const idx = e.target.getAttribute('idx')

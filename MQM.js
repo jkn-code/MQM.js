@@ -15,12 +15,13 @@ class MQM {
         this.parseText()
 
         document.body.innerHTML += `<div class="plane">
-            <div id="mqImg"></div>
-            <div id="mqText"></div>
-            <div id="mqBtns"></div>
-            <div id="mqEnds"></div>
-            <div id="mqFooter"></div>
-            <div id="mqLoading"></div>
+            <div id="mqPage">
+                <div id="mqText"></div>
+                <div id="mqBtns"></div>
+                <div id="mqEnds"></div>
+                <div id="mqFooter"></div>
+                <div id="mqLoading"></div>
+            </div>
             <div id="mqOpenMenu">&equiv;</div>
             <div id="mqMenu">
                 <span id="mqCountQ">Pages: 0 &nbsp; Letters: 0</span>
@@ -70,24 +71,23 @@ class MQM {
             max-width: 600px;
             min-height: 100vh;
         }
-        #mqImg {
-            opacity: 0;
-        }
-        #mqImg img {
-            width: 100%;
-            display: block;
-        }
         #mqText {
-            padding: 20px;
             line-height: 25px;
             text-align: justify;
         }
         #mqText p {
             text-indent: 40px;
+            padding: 20px;
+        }
+        #mqText p.cnt {
+            text-indent: 0px;
+            text-align: center;
+        }
+        #mqText img {
+            width: 100%;
         }
         #mqBtns {
-            margin: 50px 0 100px 0;
-            opacity: 0;
+            margin: 100px 0;
         }
         .btn {
             padding: 20px;
@@ -117,14 +117,13 @@ class MQM {
             transition: 0.3s;
         }
         #mqOpenMenu:hover {
-            color: #aaa;
+            opacity: 0.7;
         }
         #mqMenu {
             position: fixed;
             top: 5px;
             right: 5px;
             background-color: #fff;
-            1border: 1px solid #000a;
             box-shadow: rgba(0, 0, 0, .5) 0 2px 5px 0;
             z-idex: 11;
             display: none;
@@ -189,13 +188,13 @@ class MQM {
         document.head.appendChild(style)
 
         if (this.cfg.borderColor) {
-            mqImg.style.color = this.cfg.borderColor
-            const rgb = mqImg.style.color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
+            mqOpenMenu.style.color = this.cfg.borderColor
+            const rgb = mqOpenMenu.style.color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
             style.appendChild(document.createTextNode('.btn:hover { background-color: rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ', 0.1); }'))
             style.appendChild(document.createTextNode('.btn { border-color: rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ', 0.5); }'))
         }
 
-        if (this.cfg.filter) mqImg.style.filter = this.cfg.filter;
+        if (this.cfg.filter) style.appendChild(document.createTextNode('#mqText img { filter: '+ this.cfg.filter +' }'))
     }
 
 
@@ -244,7 +243,6 @@ class MQM {
             if (e.target.classList.contains('load')) this.loadQ(e)
         }
 
-
         this.loading()
     }
 
@@ -252,13 +250,14 @@ class MQM {
     loading() {
         let imgs = 0, load = 0
 
-        for (const j in this.pages) if (this.pages[j].img) {
-            const src = this.pages[j].img
-            this.pages[j].img = new Image()
-            this.pages[j].img.src = src
-            this.pages[j].img.onload = () => load++
-            imgs++
-        }
+        for (const j in this.pages) 
+            this.pages[j].imgs.forEach((src, i) => {
+                this.pages[j].imgs[i] = new Image()
+                this.pages[j].imgs[i].src = src
+                this.pages[j].imgs[i].onload = () => load++
+                imgs++
+            })
+
         const iv = setInterval(() => {
             mqLoading.innerHTML = ''
             for (let i = 0; i < imgs - load; i++)
@@ -273,7 +272,6 @@ class MQM {
 
 
     workPage() {
-        console.log(this.nowPage);
         if (this.nowPage.forks) {
             let goto, fnStr
             this.nowPage.forks.forEach(fr => {
@@ -337,29 +335,44 @@ class MQM {
     printPage() {
         window.scrollTo({ top: 0 })
         mqText.innerHTML = ''
-        mqImg.innerHTML = ''
         mqBtns.innerHTML = ''
         mqEnds.innerHTML = ''
 
         if (!this.nowPage) return
 
-        if (this.nowPage.img && this.nowPage.img != '')
-            mqImg.appendChild(this.nowPage.img)
-
         if (this.nowPage.text && this.nowPage.text.trim() != '') {
             let tx = this.nowPage.text
+
             const mv = tx.split('%')
-            let t = true
             mv.forEach((vt, i) => {
                 try {
                     mv[i] = eval(vt.trim())
-                } catch (a) {
-                }
+                } catch (a) { }
             })
             tx = mv.join('')
+
             let mt = tx.split('\n')
+            mt.forEach((ln, i) => {
+                if (ln.trim() == '') return
+
+                const key = ln.split(' ')[0]
+                const str = ln.replace(key, '').trim()
+
+                if (key == '++') {
+                    mqText.appendChild(this.nowPage.imgs[parseInt(str.trim())])
+                    return
+                }
+
+                const p = document.createElement('p')
+                if (key == '^^') {
+                    p.classList.add('cnt')
+                    ln = str
+                }
+                p.innerHTML = ln
+                mqText.appendChild(p)
+            })
+
             mqText.style.display = 'block'
-            mqText.innerHTML = '<p>' + mt.join('<br></p><p>') + '</p>'
         }
 
         if (this.nowPage.btns) {
@@ -412,9 +425,7 @@ class MQM {
             this.printPage()
         }
         if (to == 'out') opacity = 1
-        mqImg.style.opacity = opacity
-        mqText.style.opacity = opacity
-        mqBtns.style.opacity = opacity
+        mqPage.style.opacity = opacity
         let f = setInterval(() => {
             if (to == 'out') {
                 opacity -= 0.05
@@ -429,9 +440,7 @@ class MQM {
                     clearInterval(f)
                 }
             }
-            mqImg.style.opacity = opacity
-            mqText.style.opacity = opacity
-            mqBtns.style.opacity = opacity
+            mqPage.style.opacity = opacity
         }, 20);
     }
 
@@ -523,7 +532,7 @@ class MQM {
         let nFrk = -1
         this.vars = []
         const newPages = {}
-        const tags = ['>name', '>icon', '>back', '>text', '>border', '>filter', '>nocss', '>var', '>start', '!!!', '***', '==', '??-', '++', '..', '??', '::', '^^', '//']
+        const tags = ['>name', '>icon', '>back', '>text', '>border', '>filter', '>nocss', '>var', '>start', '!!!', '***', '==', '??-', '++', '..', '??', '::', '//']
         lns.forEach(ln => {
             const m = ln.split(' ')
             const key = m.splice(0, 1)[0]
@@ -547,7 +556,7 @@ class MQM {
                 name = str
                 nBtn = -1
                 nFrk = -1
-                newPages[name] = { text: '' }
+                newPages[name] = { text: '', imgs: [] }
             }
             if (name == '') return
             if (key == '==') {
@@ -564,7 +573,10 @@ class MQM {
                 newPages[name].forks[nFrk].if = str
                 newPages[name].forks[nFrk].fnStr = ''
             }
-            if (key == '++') newPages[name].img = str
+            if (key == '++') {
+                newPages[name].text += '++ ' + newPages[name].imgs.length + '\n'
+                newPages[name].imgs.push(str)
+            }
             if (key == '..') {
                 if (nBtn > -1) newPages[name].btns[nBtn].goto = str
                 if (nFrk > -1) newPages[name].forks[nFrk].goto = str
@@ -574,7 +586,6 @@ class MQM {
                 if (nBtn > -1) newPages[name].btns[nBtn].fnStr += str + '\n'
                 if (nFrk > -1) newPages[name].forks[nFrk].fnStr += str + '\n'
             }
-            if (key == '^^') newPages[name].text += '<center>' + str + '</center>\n'
             if (!tags.includes(key)) {
                 if (ln.trim() != '') newPages[name].text += ln + '\n'
                 this.countCh += ln.length

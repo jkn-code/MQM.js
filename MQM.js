@@ -616,6 +616,6 @@ function rnd(min, max) {
 
 const log = console.log
 
-function round(n, c) {
+function round(n, c = 0) {
     return n.toFixed(c)
 }
